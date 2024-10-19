@@ -12,7 +12,6 @@ def split_nodes_delimiter(old_nodes : list[TextNode], delimiter, text_type):
     for node in old_nodes:
         match node.text_type:
             case TextType.TEXT.value:
-                print("case texttype.TEXT")
                 quantity_of_delimiters = len(list(filter(lambda x: x == delimiter,node.text)))
                 if quantity_of_delimiters == 0:
                     new_nodes.append(node)
