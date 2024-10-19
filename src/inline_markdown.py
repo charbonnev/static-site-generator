@@ -1,3 +1,4 @@
+import re
 from textnode import TextType, TextNode
 from htmlnode import *
 
@@ -31,4 +32,21 @@ def split_nodes_delimiter(old_nodes : list[TextNode], delimiter, text_type):
             case _:
                 new_nodes.append(node)
     return new_nodes
-            
+
+def useless():
+    text = "I have a (cat) and a (dog)"
+    matches = re.findall(r"\((.*?)\)", text)
+    print(matches) # ['cat', 'dog']
+
+def extract_markdown_images(text):
+    # takes a string and returns a list of tuples. 
+    # Each tuple should contain the alt text and the URL of any markdown images.
+    # findall actually returns a list of strings, 
+    # but if there are more than one group in a pattern a list of tuples of strings
+    matches = re.findall(r"!\[(.*?)\]\((.*?)\)", text)
+    return matches
+
+def extract_markdown_links(text):
+    #same as above but for links
+    matches = re.findall(r"\[(.*?)\]\((.*?)\)", text)
+    return matches
