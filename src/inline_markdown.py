@@ -47,13 +47,18 @@ def extract_markdown_links(text):
 def split_nodes_image(old_nodes : list[TextNode]):
     new_nodes = []
     for node in old_nodes:
+        if node.text_type != TextType.TEXT.value:
+            new_nodes.append(node)
+            continue
         md_images = extract_markdown_images(node.text)
         if not md_images:
-            new_nodes.append(TextNode(node.text, node.text_type))
+            new_nodes.append(node)
             continue
         remaining_text = node.text
         for image in md_images:
             split_text = remaining_text.split(f"![{image[0]}]({image[1]})")
+            if len(split_text) != 2:
+                raise ValueError("Invalid markdown, image section not closed")
             if split_text[0]:
                 new_nodes.append(TextNode(split_text[0], TextType.TEXT))
             new_nodes.append(TextNode(image[0], TextType.IMAGE, image[1]))
@@ -65,13 +70,18 @@ def split_nodes_image(old_nodes : list[TextNode]):
 def split_nodes_link(old_nodes : list[TextNode]):
     new_nodes = []
     for node in old_nodes:
+        if node.text_type != TextType.TEXT.value:
+            new_nodes.append(node)
+            continue
         md_links = extract_markdown_links(node.text)
         if not md_links:
-            new_nodes.append(TextNode(node.text, node.text_type))
+            new_nodes.append(node)
             continue
         remaining_text = node.text
         for link in md_links:
             split_text = remaining_text.split(f"[{link[0]}]({link[1]})")
+            if len(split_text) != 2:
+                raise ValueError("Invalid markdown, link section not closed")
             if split_text[0]:
                 new_nodes.append(TextNode(split_text[0], TextType.TEXT))
             new_nodes.append(TextNode(link[0], TextType.LINK, link[1]))
