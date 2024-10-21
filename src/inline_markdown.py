@@ -33,20 +33,49 @@ def split_nodes_delimiter(old_nodes : list[TextNode], delimiter, text_type):
                 new_nodes.append(node)
     return new_nodes
 
-def useless():
-    text = "I have a (cat) and a (dog)"
-    matches = re.findall(r"\((.*?)\)", text)
-    print(matches) # ['cat', 'dog']
-
 def extract_markdown_images(text):
-    # takes a string and returns a list of tuples. 
-    # Each tuple should contain the alt text and the URL of any markdown images.
-    # findall actually returns a list of strings, 
-    # but if there are more than one group in a pattern a list of tuples of strings
-    matches = re.findall(r"!\[(.*?)\]\((.*?)\)", text)
+    pattern = r"!\[([^\[\]]*)\]\(([^\(\)]*)\)"
+    matches = re.findall(pattern, text)
     return matches
+
 
 def extract_markdown_links(text):
-    #same as above but for links
-    matches = re.findall(r"\[(.*?)\]\((.*?)\)", text)
+    pattern = r"(?<!!)\[([^\[\]]*)\]\(([^\(\)]*)\)"
+    matches = re.findall(pattern, text)
     return matches
+
+def split_nodes_image(old_nodes : list[TextNode]):
+    new_nodes = []
+    for node in old_nodes:
+        md_images = extract_markdown_images(node.text)
+        if not md_images:
+            new_nodes.append(TextNode(node.text, node.text_type))
+            continue
+        remaining_text = node.text
+        for image in md_images:
+            split_text = remaining_text.split(f"![{image[0]}]({image[1]})")
+            if split_text[0]:
+                new_nodes.append(TextNode(split_text[0], TextType.TEXT))
+            new_nodes.append(TextNode(image[0], TextType.IMAGE, image[1]))
+            remaining_text = split_text[1]
+        if remaining_text:
+            new_nodes.append(TextNode(remaining_text, TextType.TEXT))
+    return new_nodes
+
+def split_nodes_link(old_nodes : list[TextNode]):
+    new_nodes = []
+    for node in old_nodes:
+        md_links = extract_markdown_links(node.text)
+        if not md_links:
+            new_nodes.append(TextNode(node.text, node.text_type))
+            continue
+        remaining_text = node.text
+        for link in md_links:
+            split_text = remaining_text.split(f"[{link[0]}]({link[1]})")
+            if split_text[0]:
+                new_nodes.append(TextNode(split_text[0], TextType.TEXT))
+            new_nodes.append(TextNode(link[0], TextType.LINK, link[1]))
+            remaining_text = split_text[1]
+        if remaining_text:
+            new_nodes.append(TextNode(remaining_text, TextType.TEXT))
+    return new_nodes
