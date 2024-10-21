@@ -13,13 +13,13 @@ def split_nodes_delimiter(old_nodes : list[TextNode], delimiter, text_type):
     for node in old_nodes:
         match node.text_type:
             case TextType.TEXT.value:
-                quantity_of_delimiters = len(list(filter(lambda x: x == delimiter,node.text)))
+                split_text = node.text.split(delimiter)
+                quantity_of_delimiters = len(split_text) - 1
                 if quantity_of_delimiters == 0:
                     new_nodes.append(node)
                     continue
                 if quantity_of_delimiters % 2 != 0:
                     raise Exception(f"Invalid quantity of delimiters: _{delimiter}_, {node.text}")
-                split_text = node.text.split(delimiter)
                 between_delimiters = False
                 for text in split_text:
                     if not between_delimiters:
@@ -89,3 +89,12 @@ def split_nodes_link(old_nodes : list[TextNode]):
         if remaining_text:
             new_nodes.append(TextNode(remaining_text, TextType.TEXT))
     return new_nodes
+
+def text_to_textnodes(text):
+    nodes = [TextNode(text, TextType.TEXT)]
+    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
+    nodes = split_nodes_delimiter(nodes, "*", TextType.ITALIC)
+    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_link(nodes)
+    return nodes
