@@ -11,6 +11,12 @@ class TestTextNode(unittest.TestCase):
                          "[TextNode('This is text with a ', 'TEXT', None), "
                          "TextNode('code block', 'CODE', None), "
                          "TextNode(' word', 'TEXT', None)]")
+        
+class TestExtractTitle(unittest.TestCase):
+    def test_extract_title(self):
+        text = "# Hello"
+        expected = "Hello"
+        self.assertEqual(extract_title(text), expected)
 
 
 class TestLinksAndImages(unittest.TestCase):

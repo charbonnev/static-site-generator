@@ -144,7 +144,8 @@ def text_to_children(text: str) -> list[LeafNode]:
     text_nodes = text_to_textnodes(text)
     children = []
     for node in text_nodes:
-        children.append(text_node_to_html_node(node))
+        if node.text:
+            children.append(text_node_to_html_node(node))
     return children
 
 

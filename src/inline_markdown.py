@@ -33,6 +33,13 @@ def split_nodes_delimiter(old_nodes : list[TextNode], delimiter, text_type):
                 new_nodes.append(node)
     return new_nodes
 
+def extract_title(markdown):
+    split_lines : list[str] = markdown.split('\n')
+    for line in split_lines:
+        if line.startswith("# "):
+            return line.lstrip("#").strip()
+    raise Exception(f"Missing title (main heading) in md file: {markdown}")
+
 def extract_markdown_images(text):
     pattern = r"!\[([^\[\]]*)\]\(([^\(\)]*)\)"
     matches = re.findall(pattern, text)

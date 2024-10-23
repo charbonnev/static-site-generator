@@ -19,7 +19,7 @@ class HTMLNode:
 
 class LeafNode(HTMLNode):
     def __init__(self, tag: str = None, value: str = None, props: dict = None):
-        if not value:
+        if value == None:
             raise ValueError("value cannot be empty for LeafNode")
         super().__init__(tag, value, None, props)
 
